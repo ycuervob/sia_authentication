@@ -4,7 +4,7 @@ class UsersController < ApplicationController
   before_action :set_user
   include JsonWebToken
   # POST /users
-  def create
+  def get_auth_token
     
     #@user = User.find_by(nombre_usuario: params[:nombre_usuario])
     #Generate auth token and send it back 
@@ -31,21 +31,42 @@ class UsersController < ApplicationController
   #POST /auth
   #check whether the token is equal to the one in BD
   def test_token
+
     decode = jwt_decode(params[:auth_token])
     if decode != nil
-      test_auth = User.where(nombre_usuario: decode[:user_id])[0]
+
+      begin
+        @user = User.find_by(nombre_usuario: decode[:user_id])
+        if !@user.auth_token.include?(params[:auth_token])
+          return render json: {status: "Token not found"}, status: :unauthorized
+        end
+              
+      rescue => exception
+        @user = nil
+      end 
+      
     else
-      test_auth =[]
+
+      begin
+        @user = User.find_by(nombre_usuario: params[:nombre_usuario])
+        @user.auth_token.delete(params[:auth_token])
+        @user.save
+      rescue => exception
+        @user = nil
+        return render json: {status: "User not found"}, status: :unauthorized
+      end 
+
+      return render json: {status: "Token not found"}
     end
 
-    if test_auth.length() > 0
-      token = jwt_encode(user_id: test_auth[0].nombre_usuario)
-      test_auth[0].update({auth_token: [token]})
-      render json: {token: token}, status: :ok
+    if @user != nil
+      @user.auth_token.delete(params[:auth_token])
+      token = jwt_encode(user_id: @user.nombre_usuario)
+      @user.auth_token.push(token)
+      @user.save
+      render json: {auth_token: token}, status: :ok
     else
-      test_auth = User.where(nombre_usuario: params[:nombre_usuario])
-      test_auth[0].unset(:auth_token)
-      render json: {status: "authentication required"}, status: :unauthorized
+      render json: {status: "User or token not found"}
     end
   end 
 
