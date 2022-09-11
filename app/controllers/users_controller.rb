@@ -16,6 +16,7 @@ class UsersController < ApplicationController
           @user.auth_token.delete(n)
         end
       end
+      @user.save
 
       if @user.contrasena == params[:contrasena]
         #Look for a token, if not then generate one and store it the db
@@ -43,28 +44,22 @@ class UsersController < ApplicationController
     decode = jwt_decode(params[:auth_token])
     if decode != nil
 
-      begin
-        @user = User.find_by(nombre_usuario: decode[:user_id])
-        if !@user.auth_token.include?(params[:auth_token])
-          return render json: {status: "Token not found"}, status: :unauthorized
-        end
-              
-      rescue => exception
-        @user = nil
-      end 
-      
+      @user = set_user(decode[:user_id])
+      if !@user.auth_token.include?(params[:auth_token])
+        return render json: {status: "Token not found"}, status: :unauthorized
+      end
+
     else
 
-      begin
-        @user = User.find_by(nombre_usuario: params[:nombre_usuario])
+      @user = set_user()
+      
+      if @user != nil
         @user.auth_token.delete(params[:auth_token])
         @user.save
-      rescue => exception
-        @user = nil
+        return render json: {status: "Token not found"}, status: :unauthorized
+      else
         return render json: {status: "User not found"}, status: :unauthorized
-      end 
-
-      return render json: {status: "Token not found"}
+      end    
     end
 
     if @user != nil
@@ -74,7 +69,7 @@ class UsersController < ApplicationController
       @user.save
       render json: {auth_token: token}, status: :ok
     else
-      render json: {status: "User or token not found"}
+      render json: {status: "User or token not found"}, status: :unauthorized
     end
   end 
 
@@ -84,9 +79,9 @@ class UsersController < ApplicationController
       params.permit(:nombre_usuario, :contrasena, :token)
     end
 
-    def set_user
+    def set_user(user_name = params[:nombre_usuario])
       begin
-        @user = User.find_by(nombre_usuario: params[:nombre_usuario])
+        @user = User.find_by(nombre_usuario: user_name)
       rescue => exception
         @user = nil
       end     

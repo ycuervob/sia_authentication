@@ -5,7 +5,7 @@ module JsonWebToken
     
     SECRET_KEY = Rails.application.secret_key_base
 
-    def jwt_encode (payload, exp = 1.seconds.from_now)
+    def jwt_encode (payload, exp = 15.minutes.from_now)
         timestamp = p DateTime.now.strftime('%Q')
         payload[:exp] = exp.to_i
         payload[:timestamp] = timestamp
