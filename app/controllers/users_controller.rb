@@ -1,30 +1,31 @@
 require 'json'
 
 class UsersController < ApplicationController
-  #before_action only: [:show, :update, :destroy]
-
+  before_action :set_user
   include JsonWebToken
-
   # POST /users
-  def get_auth_token
+  def create
     
-    seach_get_auth = User.where(nombre_usuario: params[:nombre_usuario])
-
+    #@user = User.find_by(nombre_usuario: params[:nombre_usuario])
     #Generate auth token and send it back 
-    if seach_get_auth.length() > 0 and seach_get_auth[0].contrasena == params[:contrasena]
-      
-      #Look for a token, if not then generate one and store it the db
-      token = jwt_encode(user_id: seach_get_auth[0].nombre_usuario)
-      if seach_get_auth[0].auth_token == nil
-          seach_get_auth[0].update({auth_token: [token]})
-          render json: {token: token}, status: :ok
-      else         
-          render json: {status: seach_get_auth[0].auth_token}
+    if @user != nil
+      if @user.contrasena == params[:contrasena]
+        #Look for a token, if not then generate one and store it the db
+        token = jwt_encode(user_id: @user.nombre_usuario)
+    
+        if !@user.auth_token? 
+          @user.auth_token = []
+        end
+
+        @user.auth_token.push(token)
+        @user.save
+        render json: {token: token}, status: :ok         
+        else
+          render json: {status: "User not found"}
+        end
+      else
+        render json: {status: "User not found"}
       end
-      
-    else
-      render json: {status: "User not found"}
-    end
   end
 
   #POST /auth
@@ -32,7 +33,7 @@ class UsersController < ApplicationController
   def test_token
     decode = jwt_decode(params[:auth_token])
     if decode != nil
-      test_auth = User.where(nombre_usuario: decode[:user_id])
+      test_auth = User.where(nombre_usuario: decode[:user_id])[0]
     else
       test_auth =[]
     end
@@ -44,13 +45,21 @@ class UsersController < ApplicationController
     else
       test_auth = User.where(nombre_usuario: params[:nombre_usuario])
       test_auth[0].unset(:auth_token)
-      render json: '{"status": "User not found"}'
+      render json: {status: "authentication required"}, status: :unauthorized
     end
   end 
 
   private
     # Only allow a trusted parameter "white list" through.
     def user_params
-      params.require(:user).permit(:nombre_usuario, :contrasena, :token)
+      params.permit(:nombre_usuario, :contrasena, :token)
+    end
+
+    def set_user
+      begin
+        @user = User.find_by(nombre_usuario: params[:nombre_usuario])
+      rescue => exception
+        @user = nil
+      end     
     end
 end
