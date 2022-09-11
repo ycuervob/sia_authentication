@@ -10,14 +10,6 @@ class UsersController < ApplicationController
     #Generate auth token and send it back 
     if @user != nil
 
-      for n in @user.auth_token.each do
-        decoded = jwt_decode(n)
-        if decoded == nil
-          @user.auth_token.delete(n)
-        end
-      end
-      @user.save
-
       if @user.contrasena == params[:contrasena]
         #Look for a token, if not then generate one and store it the db
         token = jwt_encode(user_id: @user.nombre_usuario)
@@ -25,6 +17,14 @@ class UsersController < ApplicationController
         if !@user.auth_token? 
           @user.auth_token = []
         end
+
+        for n in @user.auth_token.each do
+          decoded = jwt_decode(n)
+          if decoded == nil
+            @user.auth_token.delete(n)
+          end
+        end
+        @user.save
 
         @user.auth_token.push(token)
         @user.save
