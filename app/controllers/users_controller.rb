@@ -19,12 +19,14 @@ class UsersController < ApplicationController
         end
 
         for n in @user.auth_token.each do
+          @user = set_user()
           decoded = jwt_decode(n)
           if decoded == nil
             @user.auth_token.delete(n)
+            @user.save
           end
         end
-        @user.save
+        
 
         @user.auth_token.push(token)
         @user.save
