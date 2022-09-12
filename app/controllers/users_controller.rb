@@ -30,7 +30,7 @@ class UsersController < ApplicationController
 
         @user.auth_token.push(token)
         @user.save
-        render json: {token: token}, status: :ok         
+        render json: {token: token, rol: @user.rol}, status: :ok         
         else
           render json: {status: "User not found"}
         end
@@ -69,7 +69,7 @@ class UsersController < ApplicationController
       token = jwt_encode(user_id: @user.nombre_usuario)
       @user.auth_token.push(token)
       @user.save
-      render json: {auth_token: token}, status: :ok
+      render json: {auth_token: token, rol: @user.rol}, status: :ok
     else
       render json: {status: "User or token not found"}, status: :unauthorized
     end
