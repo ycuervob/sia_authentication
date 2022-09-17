@@ -25,4 +25,14 @@ class TokensController < ApplicationController
     end
   end 
 
+  private
+    # Use callbacks to share common setup or constraints between actions.
+    def set_user
+      begin
+        @user = User.find_by(nombre_usuario: params[:nombre_usuario])
+      rescue => exception
+        @user = nil
+      end    
+    end
+
 end
