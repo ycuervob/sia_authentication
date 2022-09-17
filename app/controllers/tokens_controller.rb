@@ -1,7 +1,7 @@
 require 'json'
 
 class TokensController < ApplicationController
-  before_action :set_user, :user_params
+  before_action :set_user
   include JsonWebToken
 
   # POST /auth
@@ -15,7 +15,6 @@ class TokensController < ApplicationController
   end
 
   #POST /auth/refresh
-  #check whether the token is equal to the one in BD
   def test_token
     decode = jwt_decode(params[:auth_token]) 
     if decode != nil
@@ -26,17 +25,4 @@ class TokensController < ApplicationController
     end
   end 
 
-  private
-    # Only allow a trusted parameter "white list" through.
-    def user_params
-      params.permit(:nombre_usuario, :contrasena, :auth_token)
-    end
-
-    def set_user(user_name = params[:nombre_usuario])
-      begin
-        @user = User.find_by(nombre_usuario: user_name)
-      rescue => exception
-        @user = nil
-      end     
-    end
 end
