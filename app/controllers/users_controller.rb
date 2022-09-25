@@ -14,6 +14,11 @@ class UsersController < ApplicationController
 
   # POST /users
   def create
+
+    if user_params[:contrasena].nil? || user_params[:nombre_usuario].nil? || user_params[:rol].nil?
+      return render json: {error: "Bad data"}, status: :unprocessable_entity 
+    end
+
     @user = User.new(user_params)
 
     begin
