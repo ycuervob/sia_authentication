@@ -2,8 +2,8 @@ source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '3.1.2'
-
 # Handle mongo
+gem 'jwt'
 gem 'mongoid', '~> 7.0.5'
 gem 'bcrypt', '~> 3.1.7'
 
@@ -34,3 +34,6 @@ end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data'
+gem 'foreman'
+gem 'sidekiq'
+gem 'redis'

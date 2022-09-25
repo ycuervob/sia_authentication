@@ -1,39 +1,51 @@
 class UsersController < ApplicationController
-  #before_action only: [:show, :update, :destroy]
+  before_action :set_user, only: [:create, :show, :update, :destroy]
+
+  # GET /users
+  def index
+    @users = User.all
+    render json: @users
+  end
+
+  # GET /users/1
+  def show
+    render json: @user
+  end
 
   # POST /users
-  def get_auth_token
-    seach_get_auth = User.where(nombre_usuario: params[:nombre_usuario], contrasena: params[:contrasena])
+  def create
+    @user = User.new(user_params)
 
-    #Generate auth token and send it back 
-    if seach_get_auth.length() > 0 and seach_get_auth[0].contrasena == params[:contrasena]
-      #Look for a token, if not then generate one
-      render json: {token: seach_get_auth[0].auth_token}
-    else
-      render json: '{"status": "User not found"}'
+    begin
+      @user.save
+      render json: @user, status: :created, location: @user
+    rescue => exception
+      render json: {error: exception}, status: :unprocessable_entity
     end
   end
 
-  #check whether the token is equal to the one in BD
-  def test_token
-    test_auth = User.where(nombre_usuario: params[:nombre_usuario])
-
-    if test_auth.length() > 0
-      if params[:auth_token] == "null"
-        render json: {access: "false"}
-      elsif  params[:auth_token] == test_auth[0].auth_token
-        render json: {access: "true"}
-      else 
-        render json: {access: "false"}
-      end   
+  # PATCH/PUT /users/1
+  def update
+    if @user.update(user_params)
+      render json: @user
     else
-      render json: '{"status": "User not found"}'
+      render json: @user.errors, status: :unprocessable_entity
     end
-  end 
+  end
+
+  # DELETE /users/1
+  def destroy
+    @user.destroy
+  end
 
   private
-    # Only allow a trusted parameter "white list" through.
-    def user_params
-      params.require(:user).permit(:nombre_usuario, :contrasena)
+
+    # Use callbacks to share common setup or constraints between actions.
+    def set_user
+      begin
+        @user = User.find_by(nombre_usuario: params[:id])
+      rescue => exception
+        @user = nil
+      end    
     end
 end
