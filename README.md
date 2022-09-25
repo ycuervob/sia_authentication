@@ -1,4 +1,4 @@
-# README 
+# Rails single authentication app 
 
 Single user gestor and Tocken provider for authentication app.
 
