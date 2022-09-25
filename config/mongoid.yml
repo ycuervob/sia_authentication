@@ -9,7 +9,7 @@ development:
       # Provides the hosts the default client can connect to. Must be an array
       # of host:port pairs. (required)
       hosts:
-      - localhost:27017
+      - sia_session_db
     
   # Configure Mongoid specific options. (optional)
   options:
@@ -19,7 +19,7 @@ test:
     default:
       database: sia_session
       hosts:
-        - localhost:27017
+        - sia_session_db
       options:
         read:
           mode: :primary
@@ -30,7 +30,7 @@ production:
     default:
       database: sia_session
       hosts:
-        - localhost:27017
+        - sia_session_db
       options:
         # user: 'user'.
         # password: 'password'
