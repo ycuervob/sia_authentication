@@ -31,10 +31,11 @@ class UsersController < ApplicationController
 
   # PATCH/PUT /users/1
   def update
-    if @user.update(user_params)
+    begin
+      @user.update(user_params)
       render json: @user
-    else
-      render json: @user.errors, status: :unprocessable_entity
+    rescue => exception
+      render json: {error: exception}, status: :unprocessable_entity
     end
   end
 
