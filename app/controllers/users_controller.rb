@@ -57,7 +57,7 @@ class UsersController < ApplicationController
       begin
         @user = User.find_by(nombre_usuario: params[:id])
       rescue => exception
-        @exception = "not user " + params[:id] 
+        @exception = "not user " + (params[:id] || "created") 
       end    
     end
 end
