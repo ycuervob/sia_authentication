@@ -71,6 +71,9 @@ GEM
       activesupport (>= 5.0)
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
+    jbuilder (2.11.5)
+      actionview (>= 5.0.0)
+      activesupport (>= 5.0.0)
     jwt (2.5.0)
     loofah (2.18.0)
       crass (~> 1.0.2)
@@ -157,6 +160,7 @@ DEPENDENCIES
   bootsnap (>= 1.4.2)
   byebug
   foreman
+  jbuilder (~> 2.7)
   jwt
   mongoid (~> 7.0.5)
   puma (~> 4.1)

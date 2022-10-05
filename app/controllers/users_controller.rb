@@ -4,54 +4,60 @@ class UsersController < ApplicationController
   # GET /users
   def index
     @users = User.all
-    render json: @users
+    render :index
   end
 
   # GET /users/1
   def show
-    render json: @user
+    render :show
   end
 
   # POST /users
   def create
 
     if user_params[:contrasena].nil? || user_params[:nombre_usuario].nil? || user_params[:rol].nil?
-      return render json: {error: "Bad data"}, status: :unprocessable_entity 
+      @exception = "Bad data"
+      return render :error, status: :unprocessable_entity 
     end
 
     @user = User.new(user_params)
 
     begin
       @user.save
-      render json: @user, status: :created, location: @user
+      render :show, status: :created, location: @user
     rescue => exception
-      render json: {error: exception}, status: :unprocessable_entity
+      @exception = exception
+      render :error, status: :unprocessable_entity
     end
   end
 
   # PATCH/PUT /users/1
   def update
-    begin
+    if !@user.nil?
       @user.update(user_params)
-      render json: @user
-    rescue => exception
-      render json: {error: exception}, status: :unprocessable_entity
+      render :show
+    else
+      render :error, status: :unprocessable_entity
     end
   end
 
   # DELETE /users/1
   def destroy
-    @user.destroy
+    if !@user.nil?
+      @user.destroy
+      render :show
+    else
+      render :error, status: :unprocessable_entity
+    end
   end
 
   private
-
     # Use callbacks to share common setup or constraints between actions.
     def set_user
       begin
         @user = User.find_by(nombre_usuario: params[:id])
       rescue => exception
-        @user = nil
+        @exception = "not user " + params[:id] 
       end    
     end
 end

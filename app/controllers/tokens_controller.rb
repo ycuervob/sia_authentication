@@ -7,21 +7,21 @@ class TokensController < ApplicationController
   # POST /auth
   def get_auth_token
     if @user&.contrasena == params[:contrasena]
-      token = jwt_encode(user_id: @user.nombre_usuario, user_rol: @user.rol)
-      render json: {auth_token: token, rol: @user.rol}, status: :ok    
+      @token = jwt_encode(user_id: @user.nombre_usuario, user_rol: @user.rol)
+      render :show, status: :ok    
     else
-      render json: {status: "User not found"}
+      render :error, status: :unauthorized
     end
   end
 
   #POST /auth/refresh
   def test_token
-    decode = jwt_decode(params[:auth_token]) 
-    if decode != nil
-      token = jwt_encode(user_id: decode[:user_id], user_rol: decode[:user_rol])
-      render json: {auth_token: token, rol: decode[:user_rol] , nombre_usuario: decode[:user_id]}, status: :ok
+    @decode = jwt_decode(params[:auth_token]) 
+    if @decode != nil
+      @token = jwt_encode(user_id: @decode[:user_id], user_rol: @decode[:user_rol])
+      render :show, status: :ok
     else
-      render json: {status: "User or token not found"}, status: :unauthorized
+      render :error, status: :unauthorized
     end
   end 
 
