@@ -1,8 +1,10 @@
 require 'json'
+require 'auth_ldap'
 
 class TokensController < ApplicationController
   before_action :set_user
   include JsonWebToken
+  include LdapAuth
 
   # POST /auth
   def get_auth_token
@@ -29,8 +31,11 @@ class TokensController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_user
       begin
+        name_for_login( params[:nombre_usuario], params[:contrasena] )
         @user = User.find_by(nombre_usuario: params[:nombre_usuario])
       rescue => exception
+        puts "mi exception: "
+        puts exception
         @user = nil
       end    
     end

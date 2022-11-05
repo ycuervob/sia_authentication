@@ -1,13 +1,18 @@
-require 'net/ldap' 
+require "net/ldap" 
+module LdapAuth
+    extend ActiveSupport::Concern
 
-def name_for_login( email, password )
-    email = email[/\A\w+/].downcase  # Throw out the domain, if it was there
-    email << "@unal.edu.co"        # I only check people in my company
-    ldap = Net::LDAP.new(
-      host: 'sia.unal.edu.co',    # Thankfully this is a standard name
-      auth: { method: :simple, email: email, password:password }
-    )
-    if ldap.bind
-      puts "find!!!"
+    def name_for_login( user, password )
+        user = user[/\A\w+/].downcase  # Throw out the domain, if it was there
+        mydn = "cn=#{user},ou=sa,dc=sia,dc=unal,dc=edu,dc=co"        # I only check people in my company
+        ldap = Net::LDAP.new
+        ldap.host = "localhost"
+        ldap.port = 389
+        ldap.auth mydn, password
+        if ldap.bind
+            return true
+        end
+        raise "User not found LDAP"
     end
-end
+
+end 
