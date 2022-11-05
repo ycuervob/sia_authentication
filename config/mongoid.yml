@@ -8,10 +8,10 @@ development:
       database: sia_session
       # Provides the hosts the default client can connect to. Must be an array
       # of host:port pairs. (required)
-      hosts: <%= mongodb+srv://sia.ylyd43y.mongodb.net/test %>
+      hosts: <%= Rails.application.credentials.config[:mongo][:host] %>
       options: 
-        user: sia_user2022
-        password: sia_db_archisoft_2E
+        user: <%= Rails.application.credentials.config[:mongo][:user] %>
+        password: <%= Rails.application.credentials.config[:mongo][:password] %>
     
   # Configure Mongoid specific options. (optional)
   options:
