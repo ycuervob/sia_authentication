@@ -6,7 +6,7 @@ module LdapAuth
         user = user[/\A\w+/].downcase  # Throw out the domain, if it was there
         mydn = "cn=#{user},ou=sa,dc=sia,dc=unal,dc=edu,dc=co"        # I only check people in my company
         ldap = Net::LDAP.new
-        ldap.host = "sia_ldap"
+        ldap.host = "sia-ldap"
         ldap.port = 389
         ldap.auth mydn, password
         if ldap.bind
