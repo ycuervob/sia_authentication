@@ -1,9 +1,10 @@
-# Rails single authentication app 
+# Rails Single Authentication App 🚀
 
-Single user gestor and Tocken provider for authentication app.
+Single user manager and token provider for authentication app using JWT. 🔐
 
-Things you may want to cover:
+Things to consider:
 
-* Ruby version: 3.1.2 💎
-
-* Construct using: _docker-comose up_
+- Ruby version: 3.1.2 💎
+- Construction process: _docker-compose up_ 🐋
+- Rails version 6.0 or higher is required. 🛠️
+- MongoDB is used for the ORM.
